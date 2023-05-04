@@ -1,7 +1,6 @@
 package org.example;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -24,13 +23,16 @@ public class MongoDBConnection extends BasicDBObject {
         return this.collection.find(query).cursor();
     }
 
-    public void updateCollection(String dataId)  {
+    public void updateCollectionStatus(String dataId)  {
         BasicDBObject query = new BasicDBObject();
         query.put("_id", dataId);
 
-        BasicDBObject newStatus = new BasicDBObject();
-        newStatus.put("status", "success");
+        BasicDBObject newDocument = new BasicDBObject();
+        newDocument.put("status", 2);
 
-        this.collection.updateOne(query, newStatus);
+        BasicDBObject updateObject = new BasicDBObject();
+        updateObject.put("$set", newDocument);
+
+        this.collection.updateOne(query, updateObject);
     }
 }

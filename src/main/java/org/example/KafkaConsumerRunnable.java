@@ -9,9 +9,11 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
+import com.jayway.jsonpath.JsonPath;
 
 public class KafkaConsumerRunnable implements Runnable {
     KafkaConsumer<String,String> consumer;
+    MongoDBConnection mongoConnection;
 
     public KafkaConsumerRunnable () {
         Properties properties = new Properties();
@@ -23,14 +25,27 @@ public class KafkaConsumerRunnable implements Runnable {
 
         this.consumer = new KafkaConsumer<String, String>(properties);
         this.consumer.subscribe(Collections.singleton("server-events"));
+
+        this.mongoConnection = new MongoDBConnection("datas");
     }
 
     @Override
     public void run() {
-        ConsumerRecords<String, String> records = this.consumer.poll(Duration.ofMillis(1000));
-        for (ConsumerRecord<String, String> record : records) {
-            System.out.println("message: " + record.value());
+        while (true) {
+            ConsumerRecords<String, String> records = this.consumer.poll(Duration.ofMillis(1000));
+            for (ConsumerRecord<String, String> record : records) {
+                String value = record.value();
+                String itemId = JsonPath.read(value, "$.id");
+                System.out.println(itemId);
+                this.mongoConnection.updateCollectionStatus(itemId);
+            }
+            this.consumer.commitSync();
+
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        this.consumer.commitSync();
     }
 }
