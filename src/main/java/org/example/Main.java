@@ -6,10 +6,14 @@ import java.util.concurrent.Executors;
 
 public class Main {
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        ExecutorService executor = Executors.newFixedThreadPool(1);
+        ExecutorService executor = Executors.newFixedThreadPool(5);
 
-        KafkaConsumerRunnable consumerRunnable = new KafkaConsumerRunnable();
-        executor.submit(consumerRunnable);
+//        KafkaConsumerRunnable registerRunnable = new RegisterRunnable();
+        KafkaConsumerRunnable queryRunnable = new QueryRunnable();
+
+//        executor.submit(registerRunnable);
+        executor.submit(queryRunnable);
+
         Thread.sleep(5);
         executor.shutdown();
     }
