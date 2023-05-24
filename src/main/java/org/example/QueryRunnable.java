@@ -28,14 +28,14 @@ public class QueryRunnable extends KafkaConsumerRunnable{
             for (ConsumerRecord<String, String> record : records) {
                 String value = record.value();
                 String queryId = JsonPath.read(value, "$.queryId");
-                List<Bson> queryValue = JsonPath.read(value, "$.queryValue.filters");
+                Map queryValue = JsonPath.read(value, "$.queryValue");
                 System.out.println(queryId);
                 this.mongoConnection.executeQuery(queryId, queryValue);
             }
             this.consumer.commitSync();
 
             try {
-                Thread.sleep(5);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

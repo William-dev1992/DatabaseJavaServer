@@ -2,16 +2,10 @@ package org.example;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Filters;
-import net.minidev.json.JSONArray;
-import org.bson.BSONObject;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.lang.reflect.Array;
 import java.util.*;
-
-import static java.util.Arrays.asList;
 
 
 public class MongoDBConnection extends BasicDBObject {
@@ -43,13 +37,13 @@ public class MongoDBConnection extends BasicDBObject {
         this.collection.updateOne(query, updateObject);
     }
 
-    public void executeQuery(String queryId, List<Bson> query) {
-//        BasicDBObject filterQuery = new BasicDBObject();
-//        filterQuery.put("$and", query);
+    public void executeQuery(String queryId, Map<String, Object> query) {
+        Document filter = new Document();
+        for (Map.Entry<String,Object> entry : query.entrySet()) {
+            filter.append(entry.getKey(), entry.getValue());
+        }
 
-//        Bson filter = Filters.and(filterQuery);
-//        List matchList = new ArrayList<Object>(query);
-        AggregateIterable<Document> result = this.collection.aggregate(query);
+        FindIterable<Document> result = this.collection.find(filter);
 
         System.out.println(result);
         this.updateCollectionResult(queryId, result);
