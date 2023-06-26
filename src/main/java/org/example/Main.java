@@ -8,10 +8,10 @@ public class Main {
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(5);
 
-//        KafkaConsumerRunnable registerRunnable = new RegisterRunnable();
+        KafkaConsumerRunnable registerRunnable = new RegisterRunnable();
         KafkaConsumerRunnable queryRunnable = new QueryRunnable();
 
-//        executor.submit(registerRunnable);
+        executor.submit(registerRunnable);
         executor.submit(queryRunnable);
 
         Thread.sleep(5);
